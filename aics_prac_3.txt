@@ -1,0 +1,26 @@
+# Import necessary libraries
+import pandas as pd
+from sklearn.model_selection import train_test_split
+
+# Load the CSV file
+df = pd.read_csv('spam.csv', encoding='latin1')  # using latin1 to avoid encoding errors
+
+# Display the first few rows to understand the structure
+print("First 5 rows of the dataset:")
+print(df.head())
+
+# Optionally drop unnecessary columns if any (common in spam.csv datasets)
+# Adjust based on your specific data
+df = df[['v1', 'v2']]  # Assuming 'v1' is label (ham/spam), 'v2' is message
+df.columns = ['label', 'message']
+
+# Split the data into training and test sets (80% train, 20% test)
+train_data, test_data = train_test_split(df, test_size=0.2, random_state=42)
+
+# Print the training data
+print("\nTraining Data:")
+print(train_data.head())
+
+# Print the testing data
+print("\nTesting Data:")
+print(test_data.head())

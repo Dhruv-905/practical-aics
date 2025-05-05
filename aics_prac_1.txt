@@ -1,0 +1,50 @@
+# Step 1: Import Libraries
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+from sklearn.model_selection import train_test_split
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.naive_bayes import MultinomialNB
+from sklearn.metrics import classification_report, confusion_matrix, accuracy_score
+
+# Step 2: Load Dataset
+df = pd.read_csv('spam.csv', encoding='latin-1')
+df = df[['v1', 'v2']]  # Keep only necessary columns
+df.columns = ['label', 'message']  # Rename columns
+
+# Step 3: Preprocess Data
+df['label'] = df['label'].map({'ham': 0, 'spam': 1})  # Encode labels
+df.dropna(inplace=True)  # Drop missing data if any
+
+# Step 4: Split into Train and Test
+X = df['message']
+y = df['label']
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# Step 5: Vectorize the Text (Bag of Words)
+vectorizer = CountVectorizer()
+X_train_vectorized = vectorizer.fit_transform(X_train)
+X_test_vectorized = vectorizer.transform(X_test)
+
+# Step 6: Train the Naive Bayes Classifier
+model = MultinomialNB()
+model.fit(X_train_vectorized, y_train)
+
+# Step 7: Evaluate the Model
+y_pred = model.predict(X_test_vectorized)
+
+print("🔹 Accuracy:", accuracy_score(y_test, y_pred))
+print("\n🔹 Classification Report:\n", classification_report(y_test, y_pred))
+print("\n🔹 Confusion Matrix:\n", confusion_matrix(y_test, y_pred))
+
+# Optional: Function to Predict New Message
+def predict_spam(text):
+    text_vector = vectorizer.transform([text])
+    prediction = model.predict(text_vector)
+    return "Spam" if prediction[0] == 1 else "Ham"
+
+# Try your own message
+print("\n🔍 Test Message: 'Congratulations! You won a $1000 Walmart gift card!'")
+print("Prediction:", predict_spam("Congratulations! You won a $1000 Walmart gift card!"))
